@@ -1,5 +1,5 @@
 __version__ = "4.0b2"
-__author__ = "kcarnold@media.mit.edu, rspeer@media.mit.edu, jalonso@media.mit.edu, havasi@media.mit.edu, hugo@media.mit.edu"
+__author__ = "kcarnold@media.mit.edu, rspeer@media.mit.edu, jalonso@media.mit.edu, havasi@media.mit.edu, hugo@media.mit.edu, research@barraquand.com"
 __url__ = 'conceptnet.media.mit.edu'
 from django.db import models
 from django.contrib.auth.models import User
@@ -45,7 +45,12 @@ class ScoredModel(object):
         Ensure that the `score` property of this object agrees with the sum of
         the votes it has received.
         """
-        self.score = Vote.objects.get_score(self)['score']
+	score = Vote.objects.get_score(self)
+
+        # update standard score
+        self.score = score['score']
+        # update more accurate score using 1+p/(2+p+n) formula
+        self.score_as_float = float(score['num_up_votes']+1)/float(score['num_up_votes']+score['num_down_votes']+2)
         self.save()
 
 # Register signals to make score updates happen automatically.

@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.db import connection, models
 
+# patched version, see: http://code.google.com/p/django-voting/issues/detail?id=31
+
 try:
     from django.db.models.sql.aggregates import Aggregate
 except ImportError:
@@ -52,6 +54,8 @@ class VoteManager(models.Manager):
         return {
             'score': int(result[0]),
             'num_votes': int(result[1]),
+            'num_up_votes': (int(result[1])+int(result[0]))/2,
+            'num_down_votes': (int(result[1])-int(result[0]))/2,
         }
 
     def get_scores_in_bulk(self, objects):
@@ -92,6 +96,8 @@ class VoteManager(models.Manager):
             vote_dict[row['object_id']] = {
                 'score': int(row['score']),
                 'num_votes': int(row['num_votes']),
+                'num_up_votes': (int(row['num_votes'])+int(row['score']))/2,
+                'num_down_votes': (int(row['num_votes'])-int(row['score']))/2,
             }
         
         return vote_dict

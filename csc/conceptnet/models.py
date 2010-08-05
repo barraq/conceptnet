@@ -749,6 +749,20 @@ class Assertion(models.Model, ScoredModel):
     concept1 = models.ForeignKey(Concept, related_name='left_assertion_set')
     concept2 = models.ForeignKey(Concept, related_name='right_assertion_set')
     score = models.IntegerField(default=0)
+    
+    ###########################################################################
+    # score_as_float provide a better score function for assertion.
+    # in order to initialized this value do as follow somewhere in your query:
+    # 
+    # ...
+    # if assertion.score_as_float is None:
+    #     assertion.update_score()
+    # ...
+    #  
+    # updating the whole dataset is too expensive with SQLite !!
+    score_as_float = models.FloatField(default=0.5)  
+    ###########################################################################
+
     frequency = models.ForeignKey(Frequency)
     votes = generic.GenericRelation(Vote)
     
